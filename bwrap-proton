@@ -34,6 +34,9 @@ bwrap.display()
 bwrap.gpus()
 bwrap.audio()
 bwrap.input()
+# Performance
+bwrap.dev("/dev/hugepages")
+bwrap.dev("/dev/ntsync")
 # Game
 bwrap.rw(os.getenv("STEAM_COMPAT_INSTALL_PATH"))
 
