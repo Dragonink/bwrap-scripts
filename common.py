@@ -1,5 +1,6 @@
 import os
 import shlex
+from glob import glob
 from os import PathLike
 from pathlib import Path
 from typing import Never
@@ -119,6 +120,37 @@ class Bwrap(CmdBuilder):
             value = os.getenv(key)
         if value:
             self.opt("setenv", key, value)
+
+    def network(self) -> None:
+        self.ro("/etc/resolv.conf")
+
+    def display(self) -> None:
+        # X11
+        self.rw("/tmp/.X11-unix")
+        self.rw("/tmp/.ICE-unix")
+        self.env("DISPLAY")
+        # Wayland
+        WAYLAND_DISPLAY = os.getenv("WAYLAND_DISPLAY")
+        for f in glob(f"{WAYLAND_DISPLAY}*", root_dir=XDG_RUNTIME_DIR):
+            self.rw(XDG_RUNTIME_DIR / f)
+        self.env("WAYLAND_DISPLAY")
+
+    def gpus(self) -> None:
+        self.dev("/dev/dri")
+        for d in glob("/dev/nvidia*"):
+            self.dev(d)
+
+    def audio(self) -> None:
+        # ALSA
+        self.dev("/dev/snd")
+        # PulseAudio
+        self.rw(XDG_RUNTIME_DIR / "pulse")
+        # PipeWire
+        for f in glob("pipewire-*", root_dir=XDG_RUNTIME_DIR):
+            self.rw(XDG_RUNTIME_DIR / f)
+
+    def input(self) -> None:
+        self.dev("/dev/input")
 
 
 def main(bwrap: Bwrap, command: list[str]) -> Never:

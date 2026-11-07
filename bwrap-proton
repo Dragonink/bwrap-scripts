@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+import sys
+
+from common import *
+
+bwrap = Bwrap()
+# Runtimes
+bwrap.ro(XDG_CONFIG_HOME / "heroic" / "tools" / "runtimes")
+bwrap.ro("/etc/ld.so.cache")
+bwrap.ro("/var/cache/ldconfig")
+bwrap.dev("/sys")
+# UMU
+bwrap.rw(XDG_CACHE_HOME / "umu", create_dir=True)
+bwrap.rw(XDG_DATA_HOME / "umu", create_dir=True)
+bwrap.ro("/etc/ssl")
+bwrap.ro("/etc/pki/tls")
+bwrap.ro("/etc/passwd")
+bwrap.ro("/etc/group")
+PROTONPATH = "PROTONPATH"
+bwrap.ro(os.getenv(PROTONPATH))
+bwrap.env(PROTONPATH)
+bwrap.env("STORE")
+bwrap.env("GAMEID")
+# Proton / Wine
+WINEPREFIX = "WINEPREFIX"
+bwrap.rw(os.getenv(WINEPREFIX))
+bwrap.env(WINEPREFIX)
+bwrap.ro("/etc/machine-id")
+
+bwrap.network()
+bwrap.display()
+bwrap.gpus()
+bwrap.audio()
+bwrap.input()
+# Game
+bwrap.rw(os.getenv("STEAM_COMPAT_INSTALL_PATH"))
+
+if __name__ == "__main__":
+    main(bwrap, sys.argv[1:])
