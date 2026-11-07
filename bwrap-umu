@@ -24,6 +24,10 @@ bwrap.env(_PROTONPATH)
 bwrap.env("STORE")
 bwrap.env("GAMEID")
 bwrap.env("UMU_NO_PROTON")
+bwrap.env("UMU_RUNTIME_UPDATE")
+bwrap.env("UMU_HTTP_TIMEOUT")
+bwrap.env("UMU_HTTP_RETRIES")
+bwrap.env("UMU_LOG")
 # Proton / Wine
 _WINEPREFIX = "WINEPREFIX"
 bwrap.rw(os.getenv(_WINEPREFIX))
