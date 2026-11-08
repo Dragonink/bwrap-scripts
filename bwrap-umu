@@ -33,6 +33,8 @@ _WINEPREFIX = "WINEPREFIX"
 bwrap.rw(os.getenv(_WINEPREFIX))
 bwrap.env(_WINEPREFIX)
 bwrap.ro("/etc/machine-id")
+bwrap.rw(XDG_CACHE_HOME / "protonfixes", create_dir=True)
+bwrap.rw(XDG_CACHE_HOME / "winetricks", create_dir=True)
 
 bwrap.network()
 bwrap.display()
