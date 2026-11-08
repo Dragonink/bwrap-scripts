@@ -235,6 +235,9 @@ class Bwrap(CmdBuilder):
         self.dev("/dev/dri")
         for d in glob("/dev/nvidia*"):
             self.dev(d)
+        # Shader caches
+        self.rw(XDG_CACHE_HOME / "mesa_shader_cache", create_dir=True)
+        self.rw(XDG_CACHE_HOME / "radv_builtin_shaders", create_dir=True)
 
     def audio(self) -> None:
         # ALSA
