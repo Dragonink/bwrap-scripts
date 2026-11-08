@@ -261,6 +261,24 @@ class Bwrap(CmdBuilder):
         self.dev("/dev/dri")
         for d in glob("/dev/nvidia*"):
             self.dev(d)
+        # Shader caches
+        _MESA_SHADER_CACHE_DIR = "MESA_SHADER_CACHE_DIR"
+        MESA_SHADER_CACHE_DIR = Path(
+            os.getenv(_MESA_SHADER_CACHE_DIR, XDG_CACHE_HOME / "mesa_shader_cache")
+        )
+        self.rw(MESA_SHADER_CACHE_DIR, create_dir=True)
+        self.env(_MESA_SHADER_CACHE_DIR, MESA_SHADER_CACHE_DIR)
+        self.env("MESA_SHADER_CACHE_MAX_SIZE")
+        self.env("MESA_SHADER_CACHE_DISABLE")
+        self.rw(XDG_CACHE_HOME / "radv_builtin_shaders", create_dir=True)
+        _GL_SHADER_DISK_CACHE_PATH = "__GL_SHADER_DISK_CACHE_PATH"
+        GL_SHADER_DISK_CACHE_PATH = Path(
+            os.getenv(_GL_SHADER_DISK_CACHE_PATH, XDG_CACHE_HOME / "nvidia" / "GLCache")
+        )
+        self.rw(_GL_SHADER_DISK_CACHE_PATH, GL_SHADER_DISK_CACHE_PATH, create_dir=True)
+        self.env(_GL_SHADER_DISK_CACHE_PATH, GL_SHADER_DISK_CACHE_PATH)
+        self.env("__GL_SHADER_DISK_CACHE_SIZE")
+        self.env("__GL_SHADER_DISK_CACHE")
 
     def audio(self) -> None:
         # ALSA
