@@ -1,3 +1,16 @@
+# `bwrap-steam`
+`bwrap` wrapper for games launched with Steam
+
+```sh
+bwrap-steam [additional bwrap options...] <command to execute...>
+```
+
+## Usage
+Set the _Launch Options_ of your game to:
+```sh
+bwrap-steam %command%
+```
+
 # `bwrap-umu`
 `bwrap` wrapper for games launched with [UMU](https://github.com/Open-Wine-Components/umu-launcher)
 
