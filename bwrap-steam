@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+
+import sys
+
+from common import *
+from steam_fixes import steam_fixes
+
+dbus_proxy = DbusProxy()
+bwrap = Bwrap(dbus_proxy)
+# Steam
+bwrap.ro(HOME / ".steam")
+_STEAM_COMPAT_CLIENT_INSTALL_PATH = "STEAM_COMPAT_CLIENT_INSTALL_PATH"
+STEAM_COMPAT_CLIENT_INSTALL_PATH = Path(
+    os.getenv(_STEAM_COMPAT_CLIENT_INSTALL_PATH, XDG_DATA_HOME / "Steam")
+)
+bwrap.env(_STEAM_COMPAT_CLIENT_INSTALL_PATH, STEAM_COMPAT_CLIENT_INSTALL_PATH)
+_SRT_LAUNCHER_SERVICE_ALONGSIDE_STEAM = "SRT_LAUNCHER_SERVICE_ALONGSIDE_STEAM"
+dbus_proxy.session_talk(os.getenv(_SRT_LAUNCHER_SERVICE_ALONGSIDE_STEAM))
+bwrap.env(_SRT_LAUNCHER_SERVICE_ALONGSIDE_STEAM)
+bwrap.ro(STEAM_COMPAT_CLIENT_INSTALL_PATH / "linux32")
+bwrap.ro(STEAM_COMPAT_CLIENT_INSTALL_PATH / "linux64")
+# Runtimes
+bwrap.ro(STEAM_COMPAT_CLIENT_INSTALL_PATH / "steamrt32")
+bwrap.ro(STEAM_COMPAT_CLIENT_INSTALL_PATH / "steamrt64")
+_STEAM_COMPAT_TOOL_PATHS = "STEAM_COMPAT_TOOL_PATHS"
+for tool in os.getenv(_STEAM_COMPAT_TOOL_PATHS, "").split(os.pathsep):
+    bwrap.ro(tool)
+bwrap.env(_STEAM_COMPAT_TOOL_PATHS)
+_STEAM_COMPAT_MOUNTS = "STEAM_COMPAT_MOUNTS"
+for mount in os.getenv(_STEAM_COMPAT_MOUNTS, "").split(os.pathsep):
+    bwrap.rw(mount)
+bwrap.env(_STEAM_COMPAT_MOUNTS)
+bwrap.ro("/etc/ld.so.cache")
+bwrap.ro("/var/cache/ldconfig")
+bwrap.dev("/sys")
+bwrap.env("SRT_LOGGER_USE_JOURNAL")
+bwrap.env("SRT_LOG_LEVEL_PREFIX")
+bwrap.env("SRT_LOG_TO_JOURNAL")
+# pressure-vessel
+bwrap.ro("/etc/passwd")
+bwrap.ro("/etc/group")
+# Proton / Wine
+bwrap.env("STEAM_COMPAT_PROTON")
+_STEAM_COMPAT_DATA_PATH = "STEAM_COMPAT_DATA_PATH"
+bwrap.rw(os.getenv(_STEAM_COMPAT_DATA_PATH))
+bwrap.env(_STEAM_COMPAT_DATA_PATH)
+bwrap.ro("/etc/machine-id")
+bwrap.rw(XDG_CACHE_HOME / "protonfixes", create_dir=True)
+bwrap.rw(XDG_CACHE_HOME / "winetricks", create_dir=True)
+
+bwrap.network()
+bwrap.display()
+bwrap.gpus()
+_STEAM_COMPAT_SHADER_PATH = "STEAM_COMPAT_SHADER_PATH"
+bwrap.rw(os.getenv(_STEAM_COMPAT_SHADER_PATH))
+bwrap.env(_STEAM_COMPAT_SHADER_PATH)
+bwrap.audio()
+bwrap.input()
+# Performance
+bwrap.dev("/dev/hugepages")
+bwrap.dev("/dev/ntsync")
+# Game
+bwrap.env("STEAM_COMPAT_APP_ID")
+bwrap.env("SteamAppId")
+bwrap.env("SteamGameId")
+_STEAM_COMPAT_INSTALL_PATH = "STEAM_COMPAT_INSTALL_PATH"
+bwrap.rw(os.getenv(_STEAM_COMPAT_INSTALL_PATH))
+bwrap.env(_STEAM_COMPAT_INSTALL_PATH)
+steam_fixes(bwrap)
+
+if __name__ == "__main__":
+    for key, value in sorted(os.environ.items(), key=lambda pair: pair[0]):
+        print(f"{key}={value}")
+    main(bwrap, sys.argv[1:])
