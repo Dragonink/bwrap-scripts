@@ -7,6 +7,7 @@ from common import *
 dbus_proxy = DbusProxy()
 bwrap = Bwrap(dbus_proxy)
 # Runtimes
+bwrap.ro(XDG_DATA_HOME / "faugus-launcher" / "umu-run")
 bwrap.ro(XDG_CONFIG_HOME / "heroic" / "tools" / "runtimes")
 bwrap.ro("/etc/ld.so.cache")
 bwrap.ro("/var/cache/ldconfig")
