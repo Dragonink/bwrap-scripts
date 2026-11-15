@@ -227,6 +227,10 @@ class Bwrap(CmdBuilder):
         self.rw("/tmp/.X11-unix")
         self.rw("/tmp/.ICE-unix")
         self.env("DISPLAY")
+        # X11 Authority
+        _XAUTHORITY = "XAUTHORITY"
+        self.ro(os.getenv(_XAUTHORITY))
+        self.env(_XAUTHORITY)
         # Wayland
         WAYLAND_DISPLAY = os.getenv("WAYLAND_DISPLAY")
         for f in glob(f"{WAYLAND_DISPLAY}*", root_dir=XDG_RUNTIME_DIR):
