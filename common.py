@@ -229,7 +229,7 @@ class Bwrap(CmdBuilder):
         self.env("DISPLAY")
         # X11 Authority
         _XAUTHORITY = "XAUTHORITY"
-        self.ro(os.getenv(_XAUTHORITY))
+        self.ro(os.getenv(_XAUTHORITY, HOME / ".Xauthority"))
         self.env(_XAUTHORITY)
         # Wayland
         WAYLAND_DISPLAY = os.getenv("WAYLAND_DISPLAY")
